@@ -1,9 +1,8 @@
 import 'dart:io';
 
+import 'package:ai_backend/models/fee.dart';
+import 'package:ai_backend/repository/fee_repository.dart';
 import 'package:dart_frog/dart_frog.dart';
-
-import '../../lib/models/fee.dart';
-import '../../lib/repository/fee_repository.dart';
 
 Future<Response> onRequest(RequestContext context) async {
   final repository = FeeRepository();
@@ -13,7 +12,11 @@ Future<Response> onRequest(RequestContext context) async {
       return _getFees(context, repository);
     case HttpMethod.post:
       return _createFee(context, repository);
-    default:
+    case HttpMethod.delete:
+    case HttpMethod.head:
+    case HttpMethod.options:
+    case HttpMethod.patch:
+    case HttpMethod.put:
       return Response(statusCode: HttpStatus.methodNotAllowed);
   }
 }

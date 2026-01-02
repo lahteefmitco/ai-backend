@@ -3,7 +3,6 @@ import 'package:dotenv/dotenv.dart';
 import 'package:postgres/postgres.dart';
 
 class DatabaseClient {
-
   DatabaseClient._internal();
   static final DatabaseClient _instance = DatabaseClient._internal();
   Connection? _connection;
@@ -88,6 +87,15 @@ class DatabaseClient {
         student_id INT NOT NULL REFERENCES students(id) ON DELETE CASCADE,
         amount DECIMAL NOT NULL,
         status TEXT NOT NULL
+      );
+    ''');
+
+    // Create Users Table
+    await conn.execute('''
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username TEXT NOT NULL UNIQUE,
+        password TEXT NOT NULL
       );
     ''');
 

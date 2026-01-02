@@ -1,15 +1,17 @@
+/// A class representing a student.
 class Student {
-  final int? id;
-  final String name;
-  final int age;
-  final String grade;
-
+  /// Creates a [Student] instance.
   Student({
     this.id,
     required this.name,
     required this.age,
     required this.grade,
   });
+
+  final int? id;
+  final String name;
+  final int age;
+  final String grade;
 
   factory Student.fromJson(Map<String, dynamic> json) {
     return Student(

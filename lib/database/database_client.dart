@@ -57,7 +57,26 @@ class DatabaseClient {
         id SERIAL PRIMARY KEY,
         name TEXT NOT NULL,
         age INT NOT NULL,
-        grade TEXT NOT NULL
+        grade TEXT NOT NULL,
+        religion TEXT,
+        address TEXT,
+        sex TEXT
+      );
+    ''');
+
+    // Migrate Students Table (add new columns if they don't exist)
+    await conn.execute(
+        'ALTER TABLE students ADD COLUMN IF NOT EXISTS religion TEXT;');
+    await conn
+        .execute('ALTER TABLE students ADD COLUMN IF NOT EXISTS address TEXT;');
+    await conn
+        .execute('ALTER TABLE students ADD COLUMN IF NOT EXISTS sex TEXT;');
+
+    // Create Divisions Table
+    await conn.execute('''
+      CREATE TABLE IF NOT EXISTS divisions (
+        id SERIAL PRIMARY KEY,
+        name TEXT NOT NULL
       );
     ''');
 

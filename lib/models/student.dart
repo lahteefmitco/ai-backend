@@ -6,12 +6,18 @@ class Student {
     required this.name,
     required this.age,
     required this.grade,
+    this.religion,
+    this.address,
+    this.sex,
   });
 
   final int? id;
   final String name;
   final int age;
   final String grade;
+  final String? religion;
+  final String? address;
+  final String? sex;
 
   factory Student.fromJson(Map<String, dynamic> json) {
     return Student(
@@ -19,6 +25,9 @@ class Student {
       name: json['name'] as String,
       age: json['age'] as int,
       grade: json['grade'] as String,
+      religion: json['religion'] as String?,
+      address: json['address'] as String?,
+      sex: json['sex'] as String?,
     );
   }
 
@@ -28,6 +37,9 @@ class Student {
       'name': name,
       'age': age,
       'grade': grade,
+      if (religion != null) 'religion': religion,
+      if (address != null) 'address': address,
+      if (sex != null) 'sex': sex,
     };
   }
 }

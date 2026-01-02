@@ -46,6 +46,9 @@ Future<Response> _createStudent(
       name: json['name'] as String,
       age: json['age'] as int,
       grade: json['grade'] as String,
+      religion: json['religion'] as String?,
+      address: json['address'] as String?,
+      sex: json['sex'] as String?,
     );
     final created = await repository.createStudent(student);
     return Response.json(

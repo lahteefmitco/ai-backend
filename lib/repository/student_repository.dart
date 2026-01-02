@@ -25,30 +25,43 @@ class StudentRepository {
     final conn = await _dbClient.connection;
     final result = await conn.execute(
       Sql.named(
-        'INSERT INTO students (name, age, grade) VALUES (@name, @age, @grade) RETURNING id',
+        'INSERT INTO students (name, age, grade, religion, address, sex) VALUES (@name, @age, @grade, @religion, @address, @sex) RETURNING id',
       ),
       parameters: {
         'name': student.name,
         'age': student.age,
         'grade': student.grade,
+        'religion': student.religion,
+        'address': student.address,
+        'sex': student.sex,
       },
     );
     final id = result.first[0] as int;
     return Student(
-        id: id, name: student.name, age: student.age, grade: student.grade);
+      id: id,
+      name: student.name,
+      age: student.age,
+      grade: student.grade,
+      religion: student.religion,
+      address: student.address,
+      sex: student.sex,
+    );
   }
 
   Future<Student?> updateStudent(int id, Student student) async {
     final conn = await _dbClient.connection;
     final result = await conn.execute(
       Sql.named(
-        'UPDATE students SET name = @name, age = @age, grade = @grade WHERE id = @id RETURNING *',
+        'UPDATE students SET name = @name, age = @age, grade = @grade, religion = @religion, address = @address, sex = @sex WHERE id = @id RETURNING *',
       ),
       parameters: {
         'id': id,
         'name': student.name,
         'age': student.age,
         'grade': student.grade,
+        'religion': student.religion,
+        'address': student.address,
+        'sex': student.sex,
       },
     );
     if (result.isEmpty) return null;
@@ -81,6 +94,9 @@ class StudentRepository {
       name: map['name'] as String,
       age: map['age'] as int,
       grade: map['grade'] as String,
+      religion: map['religion'] as String?,
+      address: map['address'] as String?,
+      sex: map['sex'] as String?,
     );
   }
 }

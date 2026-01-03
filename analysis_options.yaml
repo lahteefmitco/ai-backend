@@ -1,1 +1,6 @@
 include: package:dart_frog_lint/recommended.yaml
+analyzer:
+  errors:
+    public_member_api_docs: ignore
+    lines_longer_than_80_chars: ignore
+    prefer_single_quotes: ignore

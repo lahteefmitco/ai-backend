@@ -1,9 +1,9 @@
 import 'dart:io';
+import 'package:ai_backend/util/log_functions.dart';
 import 'package:dotenv/dotenv.dart';
 import 'package:postgres/postgres.dart';
 
 class DatabaseClient {
-
   factory DatabaseClient() {
     return _instance;
   }
@@ -30,9 +30,10 @@ class DatabaseClient {
     final user = env['DB_USER'] ?? 'postgres';
     final password = env['DB_PASSWORD'] ?? 'password';
 
-    print('Database Client initialized => $host:$port as $user, $databaseName');
+    infoLog(
+        'Database Client initialized => $host:$port as $user, $databaseName');
 
-    print('Connecting to database $databaseName at $host:$port as $user');
+    infoLog('Connecting to database $databaseName at $host:$port as $user');
 
     return Connection.open(
       Endpoint(
@@ -66,7 +67,8 @@ class DatabaseClient {
 
     // Migrate Students Table (add new columns if they don't exist)
     await conn.execute(
-        'ALTER TABLE students ADD COLUMN IF NOT EXISTS religion TEXT;',);
+      'ALTER TABLE students ADD COLUMN IF NOT EXISTS religion TEXT;',
+    );
     await conn
         .execute('ALTER TABLE students ADD COLUMN IF NOT EXISTS address TEXT;');
     await conn
@@ -118,6 +120,47 @@ class DatabaseClient {
       );
     ''');
 
-    print('Tables initialized');
+    // Create Embeddings Table
+    try {
+      await conn.execute('CREATE EXTENSION IF NOT EXISTS vector;');
+    } catch (e) {
+      warningLog(
+          'Vector extension creation failed (might already exist or not supported): $e');
+    }
+
+    await conn.execute('''
+      CREATE TABLE IF NOT EXISTS embeddings (
+        id SERIAL PRIMARY KEY,
+        table_name TEXT NOT NULL,
+        record_id INT NOT NULL,
+        embedding vector(1024),
+        content TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        metadata JSONB
+      );
+    ''');
+
+    // Migrate Embeddings Table (add metadata if not exists)
+    try {
+      await conn.execute(
+          'ALTER TABLE embeddings ADD COLUMN IF NOT EXISTS metadata JSONB;');
+    } catch (e) {
+      warningLog("Error adding metadata column (might already exist): $e");
+    }
+
+    // Create HNSW Index for Embeddings
+    try {
+      await conn.execute('''
+        CREATE INDEX IF NOT EXISTS embeddings_embedding_idx 
+        ON embeddings 
+        USING hnsw (embedding vector_cosine_ops);
+      ''');
+      greenLog('HNSW Index initialized');
+    } catch (e) {
+      warningLog(
+          'Error creating HNSW index (likely vector extension issue): $e');
+    }
+
+    greenLog('Tables initialized');
   }
 }

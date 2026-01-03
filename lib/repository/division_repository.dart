@@ -1,6 +1,6 @@
 import 'package:postgres/postgres.dart';
-import '../database/database_client.dart';
-import '../models/division.dart';
+import 'package:ai_backend/database/database_client.dart';
+import 'package:ai_backend/models/division.dart';
 
 class DivisionRepository {
   final DatabaseClient _dbClient = DatabaseClient();
@@ -8,7 +8,7 @@ class DivisionRepository {
   Future<List<Division>> getAllDivisions() async {
     final conn = await _dbClient.connection;
     final result = await conn.execute('SELECT * FROM divisions');
-    return result.map((row) => _mapRowToDivision(row)).toList();
+    return result.map(_mapRowToDivision).toList();
   }
 
   Future<Division?> getDivisionById(int id) async {
@@ -31,7 +31,7 @@ class DivisionRepository {
         'name': division.name,
       },
     );
-    final id = result.first[0] as int;
+    final id = result.first[0]! as int;
     return Division(id: id, name: division.name);
   }
 

@@ -1,8 +1,4 @@
 class Mark {
-  final int? id;
-  final int studentId;
-  final int subjectId;
-  final double score;
 
   Mark({
     this.id,
@@ -21,6 +17,10 @@ class Mark {
           : (json['score'] as num).toDouble(),
     );
   }
+  final int? id;
+  final int studentId;
+  final int subjectId;
+  final double score;
 
   Map<String, dynamic> toJson() {
     return {

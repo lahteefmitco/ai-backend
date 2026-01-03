@@ -1,6 +1,6 @@
 import 'package:postgres/postgres.dart';
-import '../database/database_client.dart';
-import '../models/student.dart';
+import 'package:ai_backend/database/database_client.dart';
+import 'package:ai_backend/models/student.dart';
 
 class StudentRepository {
   final DatabaseClient _dbClient = DatabaseClient();
@@ -8,7 +8,7 @@ class StudentRepository {
   Future<List<Student>> getAllStudents() async {
     final conn = await _dbClient.connection;
     final result = await conn.execute('SELECT * FROM students');
-    return result.map((row) => _mapRowToStudent(row)).toList();
+    return result.map(_mapRowToStudent).toList();
   }
 
   Future<Student?> getStudentById(int id) async {
@@ -36,7 +36,7 @@ class StudentRepository {
         'sex': student.sex,
       },
     );
-    final id = result.first[0] as int;
+    final id = result.first[0]! as int;
     return Student(
       id: id,
       name: student.name,

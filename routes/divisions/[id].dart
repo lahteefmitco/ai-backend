@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:dart_frog/dart_frog.dart';
 
-import '../../lib/models/division.dart';
-import '../../lib/repository/division_repository.dart';
+import 'package:ai_backend/models/division.dart';
+import 'package:ai_backend/repository/division_repository.dart';
 
 Future<Response> onRequest(
   RequestContext context,
@@ -37,7 +37,7 @@ Future<Response> _getDivision(
     final division = await repository.getDivisionById(id);
     if (division == null) {
       return Response(
-          statusCode: HttpStatus.notFound, body: 'Division not found');
+          statusCode: HttpStatus.notFound, body: 'Division not found',);
     }
     return Response.json(body: division);
   } catch (e) {
@@ -61,7 +61,7 @@ Future<Response> _updateDivision(
     final updated = await repository.updateDivision(id, division);
     if (updated == null) {
       return Response(
-          statusCode: HttpStatus.notFound, body: 'Division not found');
+          statusCode: HttpStatus.notFound, body: 'Division not found',);
     }
     return Response.json(body: updated);
   } catch (e) {

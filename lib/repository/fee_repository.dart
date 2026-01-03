@@ -1,6 +1,6 @@
 import 'package:postgres/postgres.dart';
-import '../database/database_client.dart';
-import '../models/fee.dart';
+import 'package:ai_backend/database/database_client.dart';
+import 'package:ai_backend/models/fee.dart';
 
 class FeeRepository {
   final DatabaseClient _dbClient = DatabaseClient();
@@ -8,7 +8,7 @@ class FeeRepository {
   Future<List<Fee>> getAllFees() async {
     final conn = await _dbClient.connection;
     final result = await conn.execute('SELECT * FROM fees');
-    return result.map((row) => _mapRowToFee(row)).toList();
+    return result.map(_mapRowToFee).toList();
   }
 
   Future<List<Fee>> getFeesByStudentId(int studentId) async {
@@ -17,7 +17,7 @@ class FeeRepository {
       Sql.named('SELECT * FROM fees WHERE student_id = @student_id'),
       parameters: {'student_id': studentId},
     );
-    return result.map((row) => _mapRowToFee(row)).toList();
+    return result.map(_mapRowToFee).toList();
   }
 
   Future<Fee> createFee(Fee fee) async {
@@ -32,12 +32,12 @@ class FeeRepository {
         'status': fee.status,
       },
     );
-    final id = result.first[0] as int;
+    final id = result.first[0]! as int;
     return Fee(
         id: id,
         studentId: fee.studentId,
         amount: fee.amount,
-        status: fee.status);
+        status: fee.status,);
   }
 
   Future<Fee?> updateFee(int id, Fee fee) async {

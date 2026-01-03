@@ -1,8 +1,4 @@
-class Fee {
-  final int? id;
-  final int studentId;
-  final double amount;
-  final String status; // 'paid', 'pending'
+class Fee { // 'paid', 'pending'
 
   Fee({
     this.id,
@@ -21,6 +17,10 @@ class Fee {
       status: json['status'] as String,
     );
   }
+  final int? id;
+  final int studentId;
+  final double amount;
+  final String status;
 
   Map<String, dynamic> toJson() {
     return {

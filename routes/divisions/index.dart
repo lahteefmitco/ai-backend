@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:dart_frog/dart_frog.dart';
 
-import '../../lib/models/division.dart';
-import '../../lib/repository/division_repository.dart';
+import 'package:ai_backend/models/division.dart';
+import 'package:ai_backend/repository/division_repository.dart';
 
 Future<Response> onRequest(RequestContext context) async {
   final repository = DivisionRepository();

@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:dart_frog/dart_frog.dart';
 
-import '../../lib/models/student.dart';
-import '../../lib/repository/student_repository.dart';
+import 'package:ai_backend/models/student.dart';
+import 'package:ai_backend/repository/student_repository.dart';
 
 Future<Response> onRequest(
   RequestContext context,

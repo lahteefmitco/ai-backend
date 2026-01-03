@@ -18,7 +18,7 @@ Future<Response> onRequest(RequestContext context) async {
   if (username == null || password == null) {
     return Response(
         statusCode: HttpStatus.badRequest,
-        body: 'Missing username or password');
+        body: 'Missing username or password',);
   }
 
   final repo = context.read<UserRepository>();
@@ -26,7 +26,7 @@ Future<Response> onRequest(RequestContext context) async {
 
   if (user == null || !BCrypt.checkpw(password, user.password)) {
     return Response(
-        statusCode: HttpStatus.unauthorized, body: 'Invalid credentials');
+        statusCode: HttpStatus.unauthorized, body: 'Invalid credentials',);
   }
 
   // Generate JWT
@@ -51,6 +51,6 @@ Future<Response> onRequest(RequestContext context) async {
   } catch (e, st) {
     print('Login error: $e\n$st');
     return Response(
-        statusCode: HttpStatus.internalServerError, body: e.toString());
+        statusCode: HttpStatus.internalServerError, body: e.toString(),);
   }
 }

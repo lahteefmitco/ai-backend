@@ -18,7 +18,7 @@ Future<Response> onRequest(RequestContext context) async {
       password.isEmpty) {
     return Response(
         statusCode: HttpStatus.badRequest,
-        body: 'Missing username or password');
+        body: 'Missing username or password',);
   }
 
   // Ideally we should inject the repository, but for simplicity we can instantiate it or get from context if we add middleware.
@@ -34,9 +34,9 @@ Future<Response> onRequest(RequestContext context) async {
 
   if (user == null) {
     return Response(
-        statusCode: HttpStatus.conflict, body: 'User already exists');
+        statusCode: HttpStatus.conflict, body: 'User already exists',);
   }
 
   return Response.json(
-      body: {'message': 'User created successfully', 'id': user.id});
+      body: {'message': 'User created successfully', 'id': user.id},);
 }

@@ -1,23 +1,5 @@
 /// A class representing a student.
 class Student {
-  /// Creates a [Student] instance.
-  Student({
-    this.id,
-    required this.name,
-    required this.age,
-    required this.grade,
-    this.religion,
-    this.address,
-    this.sex,
-  });
-
-  final int? id;
-  final String name;
-  final int age;
-  final String grade;
-  final String? religion;
-  final String? address;
-  final String? sex;
 
   factory Student.fromJson(Map<String, dynamic> json) {
     return Student(
@@ -30,6 +12,21 @@ class Student {
       sex: json['sex'] as String?,
     );
   }
+  /// Creates a [Student] instance.
+  Student({
+    required this.name, required this.age, required this.grade, this.id,
+    this.religion,
+    this.address,
+    this.sex,
+  });
+
+  final int? id;
+  final String name;
+  final int age;
+  final String grade;
+  final String? religion;
+  final String? address;
+  final String? sex;
 
   Map<String, dynamic> toJson() {
     return {

@@ -26,7 +26,7 @@ Handler _authenticationMiddleware(Handler handler) {
     if (authHeader == null || !authHeader.startsWith('Bearer ')) {
       return Response(
           statusCode: HttpStatus.unauthorized,
-          body: 'Missing or invalid token');
+          body: 'Missing or invalid token',);
     }
 
     final token = authHeader.substring(7);
@@ -41,7 +41,7 @@ Handler _authenticationMiddleware(Handler handler) {
     } catch (_) {
       return Response(
           statusCode: HttpStatus.unauthorized,
-          body: 'Invalid or expired token');
+          body: 'Invalid or expired token',);
     }
   };
 }

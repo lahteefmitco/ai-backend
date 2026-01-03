@@ -1,8 +1,8 @@
 import 'package:bcrypt/bcrypt.dart';
 import 'package:postgres/postgres.dart';
 
-import '../database/database_client.dart';
-import '../models/user.dart';
+import 'package:ai_backend/database/database_client.dart';
+import 'package:ai_backend/models/user.dart';
 
 class UserRepository {
   Future<User?> createUser({
@@ -28,7 +28,7 @@ class UserRepository {
 
       final row = result.first;
       return User(
-        id: row[0] as int,
+        id: row[0]! as int,
         username: username,
         password: hashedPassword,
       );
@@ -55,9 +55,9 @@ class UserRepository {
     // but column structure depends on driver version.
     // Assuming row structure: id, username, password based on CREATE.
     return User(
-      id: row[0] as int,
-      username: row[1] as String,
-      password: row[2] as String,
+      id: row[0]! as int,
+      username: row[1]! as String,
+      password: row[2]! as String,
     );
   }
 }

@@ -1,7 +1,4 @@
 class Subject {
-  final int? id;
-  final String name;
-  final String code;
 
   Subject({
     this.id,
@@ -16,6 +13,9 @@ class Subject {
       code: json['code'] as String,
     );
   }
+  final int? id;
+  final String name;
+  final String code;
 
   Map<String, dynamic> toJson() {
     return {

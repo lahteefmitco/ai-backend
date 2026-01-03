@@ -2,12 +2,8 @@
 class Division {
   /// Creates a [Division] instance.
   Division({
-    this.id,
-    required this.name,
+    required this.name, this.id,
   });
-
-  final int? id;
-  final String name;
 
   factory Division.fromJson(Map<String, dynamic> json) {
     return Division(
@@ -15,6 +11,9 @@ class Division {
       name: json['name'] as String,
     );
   }
+
+  final int? id;
+  final String name;
 
   Map<String, dynamic> toJson() {
     return {

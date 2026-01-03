@@ -1,6 +1,6 @@
 import 'package:postgres/postgres.dart';
-import '../database/database_client.dart';
-import '../models/mark.dart';
+import 'package:ai_backend/database/database_client.dart';
+import 'package:ai_backend/models/mark.dart';
 
 class MarkRepository {
   final DatabaseClient _dbClient = DatabaseClient();
@@ -8,7 +8,7 @@ class MarkRepository {
   Future<List<Mark>> getAllMarks() async {
     final conn = await _dbClient.connection;
     final result = await conn.execute('SELECT * FROM marks');
-    return result.map((row) => _mapRowToMark(row)).toList();
+    return result.map(_mapRowToMark).toList();
   }
 
   Future<List<Mark>> getMarksByStudentId(int studentId) async {
@@ -17,7 +17,7 @@ class MarkRepository {
       Sql.named('SELECT * FROM marks WHERE student_id = @student_id'),
       parameters: {'student_id': studentId},
     );
-    return result.map((row) => _mapRowToMark(row)).toList();
+    return result.map(_mapRowToMark).toList();
   }
 
   Future<Mark> createMark(Mark mark) async {
@@ -32,12 +32,12 @@ class MarkRepository {
         'score': mark.score,
       },
     );
-    final id = result.first[0] as int;
+    final id = result.first[0]! as int;
     return Mark(
         id: id,
         studentId: mark.studentId,
         subjectId: mark.subjectId,
-        score: mark.score);
+        score: mark.score,);
   }
 
   Future<Mark?> updateMark(int id, Mark mark) async {

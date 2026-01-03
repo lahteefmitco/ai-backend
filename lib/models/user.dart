@@ -1,8 +1,6 @@
 class User {
   const User({
-    this.id,
-    required this.username,
-    required this.password,
+    required this.username, required this.password, this.id,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {

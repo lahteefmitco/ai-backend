@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:dart_frog/dart_frog.dart';
 
-import '../../lib/models/subject.dart';
-import '../../lib/repository/subject_repository.dart';
+import 'package:ai_backend/models/subject.dart';
+import 'package:ai_backend/repository/subject_repository.dart';
 
 Future<Response> onRequest(RequestContext context) async {
   final repository = SubjectRepository();

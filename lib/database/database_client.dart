@@ -3,13 +3,13 @@ import 'package:dotenv/dotenv.dart';
 import 'package:postgres/postgres.dart';
 
 class DatabaseClient {
-  DatabaseClient._internal();
-  static final DatabaseClient _instance = DatabaseClient._internal();
-  Connection? _connection;
 
   factory DatabaseClient() {
     return _instance;
   }
+  DatabaseClient._internal();
+  static final DatabaseClient _instance = DatabaseClient._internal();
+  Connection? _connection;
 
   Future<Connection> get connection async {
     if (_connection != null && _connection!.isOpen) {
@@ -30,11 +30,11 @@ class DatabaseClient {
     final user = env['DB_USER'] ?? 'postgres';
     final password = env['DB_PASSWORD'] ?? 'password';
 
-    print("Database Client initialized => $host:$port as $user, $databaseName");
+    print('Database Client initialized => $host:$port as $user, $databaseName');
 
     print('Connecting to database $databaseName at $host:$port as $user');
 
-    return await Connection.open(
+    return Connection.open(
       Endpoint(
         host: host,
         port: port,
@@ -42,7 +42,7 @@ class DatabaseClient {
         username: user,
         password: password,
       ),
-      settings: ConnectionSettings(
+      settings: const ConnectionSettings(
         sslMode: SslMode.disable,
       ),
     );
@@ -66,7 +66,7 @@ class DatabaseClient {
 
     // Migrate Students Table (add new columns if they don't exist)
     await conn.execute(
-        'ALTER TABLE students ADD COLUMN IF NOT EXISTS religion TEXT;');
+        'ALTER TABLE students ADD COLUMN IF NOT EXISTS religion TEXT;',);
     await conn
         .execute('ALTER TABLE students ADD COLUMN IF NOT EXISTS address TEXT;');
     await conn

@@ -1,25 +1,25 @@
-import 'package:ai_backend/database/database_client.dart';
 import 'dart:io';
+
+import 'package:ai_backend/database/database_client.dart';
 import 'package:ai_backend/services/mistral_service.dart';
 import 'package:ai_backend/services/ollama_service.dart';
-import 'package:dotenv/dotenv.dart';
 import 'package:ai_backend/util/log_functions.dart';
+import 'package:dotenv/dotenv.dart';
 import 'package:postgres/postgres.dart';
 
-// ignore: public_member_api_docs
 class EmbeddingManager {
-  final DatabaseClient _dbClient = DatabaseClient();
-  final MistralService _mistralService = MistralService();
-  final OllamaService _ollamaService = OllamaService();
-  late final String _provider;
 
   EmbeddingManager() {
     final envFile = File('env/.env');
     final env = DotEnv(includePlatformEnvironment: true)..load([envFile.path]);
     _provider = env['AI_PROVIDER']?.toUpperCase() ?? 'OLLAMA';
   }
+  final DatabaseClient _dbClient = DatabaseClient();
+  final MistralService _mistralService = MistralService();
+  final OllamaService _ollamaService = OllamaService();
+  late final String _provider;
 
-  // ignore: public_member_api_docs
+  
   Future<void> generateAndSaveEmbeddingsFor(String tableName) async {
     final conn = await _dbClient.connection;
     infoLog('Generating embeddings for table: $tableName');

@@ -74,8 +74,9 @@ class RagManager {
         SELECT content 
         FROM embeddings 
         ORDER BY embedding <=> @vector 
-        LIMIT 20
+        
       '''),
+      //LIMIT 20
       parameters: {'vector': vectorString},
     );
 

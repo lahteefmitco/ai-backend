@@ -128,17 +128,39 @@ class DatabaseClient {
           'Vector extension creation failed (might already exist or not supported): $e');
     }
 
+    // Determine dimension based on provider (this is a bit hacky but works for migration)
+    final envFile = File('env/.env');
+    final env = DotEnv(includePlatformEnvironment: true)..load([envFile.path]);
+    final provider = env['AI_PROVIDER']?.toUpperCase() ?? 'OLLAMA';
+    final dimension = provider == 'MISTRAL' ? 1024 : 768;
+
+    infoLog(
+        'Initializing Embeddings table for provider: $provider (Dim: $dimension)');
+
     await conn.execute('''
       CREATE TABLE IF NOT EXISTS embeddings (
         id SERIAL PRIMARY KEY,
         table_name TEXT NOT NULL,
         record_id INT NOT NULL,
-        embedding vector(1024),
+        embedding vector($dimension),
         content TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         metadata JSONB
       );
     ''');
+
+    // Migration logic for dimension change
+    try {
+      await conn.execute(
+          'ALTER TABLE embeddings ALTER COLUMN embedding TYPE vector($dimension);');
+    } catch (e) {
+      warningLog(
+          'Dimension mismatch detected (Target: $dimension). Truncating embeddings table...');
+      await conn.execute('TRUNCATE TABLE embeddings;');
+      await conn.execute('DROP INDEX IF EXISTS embeddings_embedding_idx;');
+      await conn.execute(
+          'ALTER TABLE embeddings ALTER COLUMN embedding TYPE vector($dimension);');
+    }
 
     // Migrate Embeddings Table (add metadata if not exists)
     try {

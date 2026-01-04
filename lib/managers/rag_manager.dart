@@ -1,11 +1,22 @@
 import 'package:ai_backend/database/database_client.dart';
+import 'dart:io';
 import 'package:ai_backend/services/mistral_service.dart';
+import 'package:ai_backend/services/ollama_service.dart';
+import 'package:dotenv/dotenv.dart';
 import 'package:ai_backend/util/log_functions.dart';
 import 'package:postgres/postgres.dart';
 
 class RagManager {
   final DatabaseClient _dbClient = DatabaseClient();
   final MistralService _mistralService = MistralService();
+  final OllamaService _ollamaService = OllamaService();
+  late final String _provider;
+
+  RagManager() {
+    final envFile = File('env/.env');
+    final env = DotEnv(includePlatformEnvironment: true)..load([envFile.path]);
+    _provider = env['AI_PROVIDER']?.toUpperCase() ?? 'OLLAMA';
+  }
 
   Future<String> askQuestion(String question) async {
     infoLog('RAG: Processing question: "$question"');
@@ -13,7 +24,11 @@ class RagManager {
     // 1. Generate Embedding for the Question
     List<double> questionEmbedding;
     try {
-      questionEmbedding = await _mistralService.generateEmbedding(question);
+      if (_provider == 'MISTRAL') {
+        questionEmbedding = await _mistralService.generateEmbedding(question);
+      } else {
+        questionEmbedding = await _ollamaService.generateEmbedding(question);
+      }
     } catch (e) {
       errorLog('Failed to generate embedding for question: $e');
       return 'Sorry, I faced an error understanding your question.';
@@ -33,9 +48,14 @@ class RagManager {
 
     // 4. Generate Answer via LLM
     try {
-      final answer = await _mistralService.chat(prompt,
-          systemPrompt:
-              'You are a helpful assistant for a school database. Answer the question based ONLY on the provided context. If the answer is not in the context, say so.');
+      final systemPrompt =
+          'You are a helpful assistant for a school database. Answer the question based ONLY on the provided context. If the answer is not in the context, say so.';
+      String answer;
+      if (_provider == 'MISTRAL') {
+        answer = await _mistralService.chat(prompt, systemPrompt: systemPrompt);
+      } else {
+        answer = await _ollamaService.chat(prompt, systemPrompt: systemPrompt);
+      }
       return answer;
     } catch (e) {
       errorLog('Failed to generate answer from LLM: $e');
@@ -48,7 +68,7 @@ class RagManager {
     final vectorString = '[${embedding.join(',')}]';
 
     // Search for top 10 most similar embeddings
-    // We use cosine distance (<=>) for 1536-dim or 1024-dim usually
+    // We use cosine distance (<=>) for 768-dim (nomic) or others
     final result = await conn.execute(
       Sql.named('''
         SELECT content 

@@ -1,5 +1,8 @@
 import 'package:ai_backend/database/database_client.dart';
+import 'dart:io';
 import 'package:ai_backend/services/mistral_service.dart';
+import 'package:ai_backend/services/ollama_service.dart';
+import 'package:dotenv/dotenv.dart';
 import 'package:ai_backend/util/log_functions.dart';
 import 'package:postgres/postgres.dart';
 
@@ -7,6 +10,14 @@ import 'package:postgres/postgres.dart';
 class EmbeddingManager {
   final DatabaseClient _dbClient = DatabaseClient();
   final MistralService _mistralService = MistralService();
+  final OllamaService _ollamaService = OllamaService();
+  late final String _provider;
+
+  EmbeddingManager() {
+    final envFile = File('env/.env');
+    final env = DotEnv(includePlatformEnvironment: true)..load([envFile.path]);
+    _provider = env['AI_PROVIDER']?.toUpperCase() ?? 'OLLAMA';
+  }
 
   // ignore: public_member_api_docs
   Future<void> generateAndSaveEmbeddingsFor(String tableName) async {
@@ -50,8 +61,12 @@ class EmbeddingManager {
         if (contentText.isNotEmpty) {
           try {
             // Generate Embedding
-            final embedding =
-                await _mistralService.generateEmbedding(contentText);
+            List<double> embedding;
+            if (_provider == 'MISTRAL') {
+              embedding = await _mistralService.generateEmbedding(contentText);
+            } else {
+              embedding = await _ollamaService.generateEmbedding(contentText);
+            }
 
             // Save to database
             await _saveEmbedding(
@@ -105,7 +120,12 @@ class EmbeddingManager {
       };
 
       try {
-        final embedding = await _mistralService.generateEmbedding(contentText);
+        List<double> embedding;
+        if (_provider == 'MISTRAL') {
+          embedding = await _mistralService.generateEmbedding(contentText);
+        } else {
+          embedding = await _ollamaService.generateEmbedding(contentText);
+        }
         await _saveEmbedding(
             conn, 'marks', id, embedding, contentText, metadata);
         greenLog(

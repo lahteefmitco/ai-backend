@@ -26,6 +26,7 @@ class MistralService {
 
   static final MistralService _instance = MistralService._internal();
 
+  /// Generates embeddings (1024 dimensions)
   Future<List<double>> generateEmbedding(String text) async {
     if (_apiKey.isEmpty) {
       throw Exception('MISTRAL_API_KEY is missing.');

@@ -1,5 +1,6 @@
 import 'package:ai_backend/database/database_client.dart';
 import 'dart:io';
+import 'package:ai_backend/services/gemini_service.dart';
 import 'package:ai_backend/services/mistral_service.dart';
 import 'package:ai_backend/services/ollama_service.dart';
 import 'package:dotenv/dotenv.dart';
@@ -10,6 +11,7 @@ class RagManager {
   final DatabaseClient _dbClient = DatabaseClient();
   final MistralService _mistralService = MistralService();
   final OllamaService _ollamaService = OllamaService();
+  final GeminiService _geminiService = GeminiService();
   late final String _provider;
 
   RagManager() {
@@ -26,6 +28,8 @@ class RagManager {
     try {
       if (_provider == 'MISTRAL') {
         questionEmbedding = await _mistralService.generateEmbedding(question);
+      } else if (_provider == 'GEMINI') {
+        questionEmbedding = await _geminiService.generateEmbedding(question);
       } else {
         questionEmbedding = await _ollamaService.generateEmbedding(question);
       }
@@ -48,11 +52,13 @@ class RagManager {
 
     // 4. Generate Answer via LLM
     try {
-      final systemPrompt =
+      const systemPrompt =
           'You are a helpful assistant for a school database. Answer the question based ONLY on the provided context. If the answer is not in the context, say so.';
       String answer;
       if (_provider == 'MISTRAL') {
         answer = await _mistralService.chat(prompt, systemPrompt: systemPrompt);
+      } else if (_provider == 'GEMINI') {
+        answer = await _geminiService.chat(prompt, systemPrompt: systemPrompt);
       } else {
         answer = await _ollamaService.chat(prompt, systemPrompt: systemPrompt);
       }

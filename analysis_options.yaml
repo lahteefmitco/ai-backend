@@ -5,3 +5,4 @@ analyzer:
     lines_longer_than_80_chars: ignore
     prefer_single_quotes: ignore
     inference_failure_on_instance_creation: ignore
+    require_trailing_commas: ignore

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:ai_backend/database/database_client.dart';
+import 'package:ai_backend/services/gemini_service.dart';
 import 'package:ai_backend/services/mistral_service.dart';
 import 'package:ai_backend/services/ollama_service.dart';
 import 'package:ai_backend/util/log_functions.dart';
@@ -8,7 +9,6 @@ import 'package:dotenv/dotenv.dart';
 import 'package:postgres/postgres.dart';
 
 class EmbeddingManager {
-
   EmbeddingManager() {
     final envFile = File('env/.env');
     final env = DotEnv(includePlatformEnvironment: true)..load([envFile.path]);
@@ -17,9 +17,9 @@ class EmbeddingManager {
   final DatabaseClient _dbClient = DatabaseClient();
   final MistralService _mistralService = MistralService();
   final OllamaService _ollamaService = OllamaService();
+  final GeminiService _geminiService = GeminiService();
   late final String _provider;
 
-  
   Future<void> generateAndSaveEmbeddingsFor(String tableName) async {
     final conn = await _dbClient.connection;
     infoLog('Generating embeddings for table: $tableName');
@@ -64,6 +64,8 @@ class EmbeddingManager {
             List<double> embedding;
             if (_provider == 'MISTRAL') {
               embedding = await _mistralService.generateEmbedding(contentText);
+            } else if (_provider == 'GEMINI') {
+              embedding = await _geminiService.generateEmbedding(contentText);
             } else {
               embedding = await _ollamaService.generateEmbedding(contentText);
             }
@@ -123,6 +125,8 @@ class EmbeddingManager {
         List<double> embedding;
         if (_provider == 'MISTRAL') {
           embedding = await _mistralService.generateEmbedding(contentText);
+        } else if (_provider == 'GEMINI') {
+          embedding = await _geminiService.generateEmbedding(contentText);
         } else {
           embedding = await _ollamaService.generateEmbedding(contentText);
         }

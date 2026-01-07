@@ -132,7 +132,7 @@ class DatabaseClient {
     final envFile = File('env/.env');
     final env = DotEnv(includePlatformEnvironment: true)..load([envFile.path]);
     final provider = env['AI_PROVIDER']?.toUpperCase() ?? 'OLLAMA';
-    final dimension = provider == 'MISTRAL' ? 1024 : 768;
+    final dimension = _getDimension(provider);
 
     infoLog(
         'Initializing Embeddings table for provider: $provider (Dim: $dimension)');
@@ -184,5 +184,14 @@ class DatabaseClient {
     }
 
     greenLog('Tables initialized');
+  }
+
+  int _getDimension(String provider) {
+    if (provider == "MISTRAL") {
+      return 1024;
+    } else if (provider == "GEMINI") {
+      return 768;
+    }
+    return 768;
   }
 }

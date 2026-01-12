@@ -40,3 +40,69 @@ DB_NAME=postgres
 DB_USER=postgres
 DB_PASSWORD=password
 ```
+
+## Model Context Protocol (MCP) Integration
+
+This backend includes a full Model Context Protocol (MCP) server implementation, allowing AI assistants to access the database and RAG system through a standardized protocol.
+
+### Starting the MCP Server
+
+**Standalone Mode** (for Claude Desktop or other MCP clients):
+```bash
+dart run bin/mcp_server.dart
+```
+
+**HTTP API** (to view server capabilities):
+```bash
+dart_frog dev
+curl http://localhost:8080/mcp
+```
+
+### Connecting from Claude Desktop
+
+Add the following to your Claude Desktop configuration file:
+
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`  
+**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "ai-backend": {
+      "command": "dart",
+      "args": ["run", "bin/mcp_server.dart"],
+      "cwd": "/path/to/ai-backend"
+    }
+  }
+}
+```
+
+### Available MCP Resources
+
+The MCP server exposes the following database resources:
+
+- `database://students` - List of all students
+- `database://subjects` - List of all subjects  
+- `database://marks` - Student marks with context
+- `database://embeddings` - Vector embeddings (limited to 100)
+- `database://divisions` - List of divisions
+
+### Available MCP Tools
+
+**RAG Tools:**
+- `ask_question` - Ask questions using the RAG system
+- `semantic_search` - Perform vector similarity search
+- `query_students` - Query students with filters
+
+**Database Tools:**
+- `get_student_info` - Get detailed student information
+- `get_student_marks` - Get all marks for a student
+- `search_students` - Search students by name or division
+
+### Example Usage
+
+Once connected to Claude Desktop, you can ask:
+- "Show me all students in the database"
+- "What is the average marks of students?"
+- "Search for students named John"
+- "Get detailed information for student ID 5"
